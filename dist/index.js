@@ -12,10 +12,10 @@ const rl = readline_1.default.createInterface({
     input: process.stdin,
     output: process.stdout
 });
-const argv = yargs_1.default.
-    command({
+const argv = yargs_1.default
+    .command({
     command: "create",
-    describe: "createa style.css file",
+    describe: "create a style.css file",
     aliases: ["c"],
     builder: {},
     handler: function (argv) {
@@ -23,7 +23,7 @@ const argv = yargs_1.default.
     }
 })
     .command("build", "Run npm run build")
-    .command("new", "create a new-project", {
+    .command("new", "create a new project", {
     "name": {
         describe: "Project name",
         demandOption: true,
@@ -49,19 +49,24 @@ if (argv._.includes("build")) {
 if (argv._.includes("new")) {
     let projectName = argv.name;
     if (!projectName) {
-        rl.question("Please enter a project name:", (inputName) => {
+        rl.question("Please enter a project name: ", (inputName) => {
             projectName = inputName;
-            rl.close();
-            createNewProject(projectName);
+            rl.question("Please enter the GitHub repo URL: ", (repoUrl) => {
+                rl.close();
+                createNewProject(projectName, repoUrl);
+            });
         });
     }
     else {
-        createNewProject(projectName);
+        rl.question("Please enter the GitHub repo URL: ", (repoUrl) => {
+            rl.close();
+            createNewProject(projectName, repoUrl);
+        });
     }
 }
-function createNewProject(projectName) {
+function createNewProject(projectName, repoUrl) {
     fs_1.default.mkdirSync(projectName);
-    (0, child_process_1.exec)(`git clone https://github.com/seferogluemre/arduino-lcd-screen.git ${projectName}`, (error, stdout, stderr) => {
+    (0, child_process_1.exec)(`git clone ${repoUrl} ${projectName}`, (error, stdout, stderr) => {
         if (error) {
             console.error("Catch Error:", stdout);
             return;
@@ -86,5 +91,5 @@ function createStyleCss() {
     }
 `;
     fs_1.default.writeFileSync('style.css', defaultCss);
-    console.log("Style.css has ben created");
+    console.log("Style.css has been created");
 }

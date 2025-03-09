@@ -9,10 +9,10 @@ const rl = readline.createInterface({
     output: process.stdout
 })
 
-const argv = yargs.
-    command({
+const argv = yargs
+    .command({
         command: "create",
-        describe: "createa style.css file",
+        describe: "create a style.css file",
         aliases: ["c"],
         builder: {},
         handler: function (argv) {
@@ -20,7 +20,7 @@ const argv = yargs.
         }
     })
     .command("build", "Run npm run build")
-    .command("new", "create a new-project", {
+    .command("new", "create a new project", {
         "name": {
             describe: "Project name",
             demandOption: true,
@@ -30,7 +30,6 @@ const argv = yargs.
     })
     .help()
     .argv as { [key: string]: unknown, _: string[] };
-
 
 if (argv._.includes("create")) {
     createStyleCss()
@@ -51,21 +50,24 @@ if (argv._.includes("new")) {
     let projectName = argv.name as string;
 
     if (!projectName) {
-        rl.question("Please enter a project name:", (inputName: string) => {
+        rl.question("Please enter a project name: ", (inputName: string) => {
             projectName = inputName;
-            rl.close();
-            createNewProject(projectName)
-        })
+            rl.question("Please enter the GitHub repo URL: ", (repoUrl: string) => {
+                rl.close();
+                createNewProject(projectName, repoUrl);
+            })
+        });
     } else {
-        createNewProject(projectName)
+        rl.question("Please enter the GitHub repo URL: ", (repoUrl: string) => {
+            rl.close();
+            createNewProject(projectName, repoUrl);
+        });
     }
-
 }
 
-function createNewProject(projectName: string) {
-
-    fs.mkdirSync(projectName)
-    exec(`git clone https://github.com/seferogluemre/arduino-lcd-screen.git ${projectName}`, (error, stdout, stderr) => {
+function createNewProject(projectName: string, repoUrl: string) {
+    fs.mkdirSync(projectName);
+    exec(`git clone ${repoUrl} ${projectName}`, (error, stdout, stderr) => {
         if (error) {
             console.error("Catch Error:", stdout)
             return;
@@ -84,7 +86,6 @@ function createNewProject(projectName: string) {
             console.error("stderr:", stderr)
         })
     })
-
 }
 
 function createStyleCss() {
@@ -95,5 +96,5 @@ function createStyleCss() {
     }
 `
     fs.writeFileSync('style.css', defaultCss)
-    console.log("Style.css has ben created")
+    console.log("Style.css has been created")
 }
